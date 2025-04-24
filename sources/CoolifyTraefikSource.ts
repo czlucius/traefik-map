@@ -24,7 +24,8 @@ export class CoolifyTraefikSource extends Source {
         }
 
         config.http.services = {
-            ...config.http.services
+            ...config.http.services,
+	    ...coolifyConfig.http.services
         }
 
         return config

@@ -10,8 +10,8 @@ export class YamlSource extends Source {
     }
     async loadConfig(config: TraefikConfig): Promise<TraefikConfig> {
         config = {...config}
-        const yamlRaw = this.readFileAsync(this.sourceFile)
-        const yamlConfig: TraefikConfig = yaml.load(yamlRaw, "utf-8")
+        const yamlRaw = await this.readFileAsync(this.sourceFile)
+        const yamlConfig: TraefikConfig = yaml.load(yamlRaw) as TraefikConfig
 
         config.http.routers = {
             ...config.http.routers,
@@ -28,17 +28,18 @@ export class YamlSource extends Source {
             ...yamlConfig.http.middlewares
         }
 
-        if (!config.tcp) {
-            config.tcp = {
+        if (yamlConfig.tcp) {
+		config.tcp = {
                 routers: {},
                 services: {},
                 middlewares: {}
             }
-        }
+
         config.tcp.routers = {
             ...config.tcp?.routers,
             ...yamlConfig.tcp?.routers
         }
+	 
 
         config.tcp.services = {
             ...config.tcp?.services,
@@ -48,6 +49,8 @@ export class YamlSource extends Source {
             ...config.tcp?.middlewares,
             ...yamlConfig.tcp?.middlewares
         }
+	}
+
         return config
     }
     
